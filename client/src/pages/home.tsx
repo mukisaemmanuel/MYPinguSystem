@@ -17,6 +17,7 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState("quests");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [isCreateQuestOpen, setIsCreateQuestOpen] = useState(false);
+  const [editingQuest, setEditingQuest] = useState<Quest | null>(null);
 
   const { data: user, isLoading: userLoading } = useQuery<User>({
     queryKey: ["/api/user"],
@@ -133,7 +134,14 @@ export default function Home() {
               {/* Quest List */}
               <div className="space-y-3">
                 {activeQuests.map((quest) => (
-                  <QuestCard key={quest.id} quest={quest} />
+                  <QuestCard 
+                    key={quest.id} 
+                    quest={quest} 
+                    onEdit={(quest) => {
+                      setEditingQuest(quest);
+                      setIsCreateQuestOpen(true);
+                    }}
+                  />
                 ))}
                 
                 {completedQuests.map((quest) => (
@@ -212,7 +220,11 @@ export default function Home() {
       {/* Create Quest Modal */}
       <CreateQuestModal 
         isOpen={isCreateQuestOpen} 
-        onClose={() => setIsCreateQuestOpen(false)} 
+        onClose={() => {
+          setIsCreateQuestOpen(false);
+          setEditingQuest(null);
+        }} 
+        editQuest={editingQuest}
       />
     </div>
   );

@@ -4,12 +4,19 @@ import type { Quest } from "@shared/schema";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { MoreVertical, Check } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MoreVertical, Check, Edit, Trash2 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
 interface QuestCardProps {
   quest: Quest;
+  onEdit?: (quest: Quest) => void;
 }
 
 const categoryColors: Record<string, string> = {
@@ -19,7 +26,7 @@ const categoryColors: Record<string, string> = {
   Study: "chart-4",
 };
 
-export default function QuestCard({ quest }: QuestCardProps) {
+export default function QuestCard({ quest, onEdit }: QuestCardProps) {
   const [isCompleting, setIsCompleting] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -47,6 +54,28 @@ export default function QuestCard({ quest }: QuestCardProps) {
       toast({
         title: "Error",
         description: "Failed to complete quest. Please try again.",
+        variant: "destructive"
+      });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async () => {
+      return apiRequest("DELETE", `/api/quests/${quest.id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/quests"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
+      
+      toast({
+        title: "Quest Deleted",
+        description: "Quest has been removed from your adventure.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to delete quest. Please try again.",
         variant: "destructive"
       });
     },
@@ -125,14 +154,39 @@ export default function QuestCard({ quest }: QuestCardProps) {
             )}
           </div>
           
-          <Button 
-            variant="ghost" 
-            size="icon"
-            className="text-muted-foreground hover:text-foreground h-8 w-8"
-            data-testid="button-quest-menu"
-          >
-            <MoreVertical className="w-4 h-4" />
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="icon"
+                className="text-muted-foreground hover:text-foreground h-8 w-8"
+                data-testid="button-quest-menu"
+              >
+                <MoreVertical className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              {!isCompleted && onEdit && (
+                <DropdownMenuItem 
+                  onClick={() => onEdit(quest)}
+                  className="cursor-pointer"
+                  data-testid="menu-edit-quest"
+                >
+                  <Edit className="w-4 h-4 mr-2" />
+                  Edit Quest
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuItem 
+                onClick={() => deleteMutation.mutate()}
+                disabled={deleteMutation.isPending}
+                className="cursor-pointer text-destructive focus:text-destructive"
+                data-testid="menu-delete-quest"
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                {deleteMutation.isPending ? "Deleting..." : "Delete Quest"}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </Card>

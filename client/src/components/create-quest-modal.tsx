@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { insertQuestSchema } from "@shared/schema";
+import { insertQuestSchema, type Quest } from "@shared/schema";
 import {
   Dialog,
   DialogContent,
@@ -34,6 +34,7 @@ import { useToast } from "@/hooks/use-toast";
 interface CreateQuestModalProps {
   isOpen: boolean;
   onClose: () => void;
+  editQuest?: Quest | null;
 }
 
 const createQuestSchema = insertQuestSchema.omit({ 
@@ -47,7 +48,7 @@ type CreateQuestFormData = z.infer<typeof createQuestSchema>;
 
 const categories = ["Health", "Work", "Personal", "Study"];
 
-export default function CreateQuestModal({ isOpen, onClose }: CreateQuestModalProps) {
+export default function CreateQuestModal({ isOpen, onClose, editQuest }: CreateQuestModalProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -62,15 +63,36 @@ export default function CreateQuestModal({ isOpen, onClose }: CreateQuestModalPr
     },
   });
 
-  const createMutation = useMutation({
+  // Reset form when editQuest changes or modal opens
+  useEffect(() => {
+    if (isOpen) {
+      form.reset({
+        title: editQuest?.title || "",
+        description: editQuest?.description || "",
+        xp: editQuest?.xp || 20,
+        timeEstimate: editQuest?.timeEstimate || "",
+        category: editQuest?.category || "Health",
+      });
+    }
+  }, [editQuest, isOpen, form]);
+
+  const saveMutation = useMutation({
     mutationFn: async (data: CreateQuestFormData) => {
-      return apiRequest("POST", "/api/quests", data);
+      if (editQuest) {
+        return apiRequest("PATCH", `/api/quests/${editQuest.id}`, data);
+      } else {
+        return apiRequest("POST", "/api/quests", data);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/quests"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       toast({
-        title: "Quest Created! ⚔️",
-        description: "Your new quest has been added to your adventure.",
+        title: editQuest ? "Quest Updated! ⚙️" : "Quest Created! ⚔️",
+        description: editQuest 
+          ? "Your quest has been updated successfully." 
+          : "Your new quest has been added to your adventure.",
       });
       form.reset();
       onClose();
@@ -78,21 +100,23 @@ export default function CreateQuestModal({ isOpen, onClose }: CreateQuestModalPr
     onError: (error: any) => {
       toast({
         title: "Error",
-        description: error.message || "Failed to create quest. Please try again.",
+        description: error.message || `Failed to ${editQuest ? 'update' : 'create'} quest. Please try again.`,
         variant: "destructive"
       });
     },
   });
 
   const onSubmit = (data: CreateQuestFormData) => {
-    createMutation.mutate(data);
+    saveMutation.mutate(data);
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md bg-card border-border" data-testid="modal-create-quest">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold">Create New Quest</DialogTitle>
+          <DialogTitle className="text-xl font-bold">
+            {editQuest ? "Edit Quest" : "Create New Quest"}
+          </DialogTitle>
         </DialogHeader>
         
         <Form {...form}>
@@ -216,11 +240,14 @@ export default function CreateQuestModal({ isOpen, onClose }: CreateQuestModalPr
               </Button>
               <Button 
                 type="submit" 
-                disabled={createMutation.isPending}
+                disabled={saveMutation.isPending}
                 className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90"
                 data-testid="button-submit-quest"
               >
-                {createMutation.isPending ? "Creating..." : "Create Quest"}
+                {saveMutation.isPending 
+                  ? (editQuest ? "Updating..." : "Creating...") 
+                  : (editQuest ? "Update Quest" : "Create Quest")
+                }
               </Button>
             </div>
           </form>
