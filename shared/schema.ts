@@ -1,4 +1,4 @@
-import { sql } from "drizzle-orm";
+import { sql, relations } from "drizzle-orm";
 import { pgTable, text, varchar, integer, timestamp, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -100,3 +100,39 @@ export type InsertAchievement = z.infer<typeof insertAchievementSchema>;
 
 export type Category = typeof categories.$inferSelect;
 export type InsertCategory = z.infer<typeof insertCategorySchema>;
+
+// Relations
+export const usersRelations = relations(users, ({ many }) => ({
+  quests: many(quests),
+  rewards: many(rewards),
+  achievements: many(achievements),
+  categories: many(categories),
+}));
+
+export const questsRelations = relations(quests, ({ one }) => ({
+  user: one(users, {
+    fields: [quests.userId],
+    references: [users.id],
+  }),
+}));
+
+export const rewardsRelations = relations(rewards, ({ one }) => ({
+  user: one(users, {
+    fields: [rewards.userId],
+    references: [users.id],
+  }),
+}));
+
+export const achievementsRelations = relations(achievements, ({ one }) => ({
+  user: one(users, {
+    fields: [achievements.userId],
+    references: [users.id],
+  }),
+}));
+
+export const categoriesRelations = relations(categories, ({ one }) => ({
+  user: one(users, {
+    fields: [categories.userId],
+    references: [users.id],
+  }),
+}));

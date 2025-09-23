@@ -10,7 +10,8 @@ import {
   type Category,
   type InsertCategory
 } from "@shared/schema";
-import { randomUUID } from "crypto";
+import { DatabaseStorage } from "./db-storage";
+import { initializeDefaultData } from "./db-init";
 
 export interface IStorage {
   // User methods
@@ -360,4 +361,8 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Create database storage instance
+export const storage = new DatabaseStorage();
+
+// Initialize with default data on startup
+initializeDefaultData(storage).catch(console.error);
