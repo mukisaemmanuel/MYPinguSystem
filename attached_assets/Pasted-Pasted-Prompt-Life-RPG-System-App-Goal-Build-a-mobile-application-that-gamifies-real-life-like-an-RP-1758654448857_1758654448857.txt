@@ -1,0 +1,147 @@
+Pasted-Prompt-Life-RPG-System-App-Goal-Build-a-mobile-application-that-gamifies-real-life-like-an-RPG--1758650137827_1758650137829.txt
+Prompt: “Life RPG System App”
+
+Goal:
+Build a mobile application that gamifies real life like an RPG (Role-Playing Game). Users create daily tasks (“quests”), track progress, earn XP, level up, and customize everything (tasks, rewards, XP system).
+
+1. Core Features
+
+Customizable Quests/Tasks
+
+Users can add, edit, or delete quests (example: Meditation, Study, Exercise).
+
+Each quest has:
+
+Title
+
+Description
+
+Time (optional)
+
+XP value
+
+Category (health, study, work, personal)
+
+XP & Level System
+
+Completing a quest adds XP.
+
+Level increases when XP threshold is reached.
+
+Progress bar for current level.
+
+Streak Tracker
+
+Track daily streaks.
+
+Show streak count (🔥 symbol).
+
+If user misses a day, streak resets.
+
+Rewards System
+
+Users can create rewards (watch anime, eat a snack, play a game).
+
+Rewards can be unlocked after reaching a certain XP or completing streaks.
+
+Categories/Tags
+
+Users can group tasks (Health, Study, Career, Mindfulness).
+
+Each category shows stats (e.g., 300 XP earned in “Health”).
+
+2. Optional Features
+
+Daily Summary Screen
+
+Show quests completed, XP gained, streaks, and level progress.
+
+Leaderboards (Social Mode)
+
+Compare progress with friends.
+
+Reminders/Notifications
+
+“Your quest Meditation is ready!”
+
+Themes/Customization
+
+Light/Dark theme
+
+Fantasy RPG skin (like Pocket FM style)
+
+3. Data & Storage
+
+User Profile:
+
+Name, Level, Current XP, Total XP, Streak Count.
+
+Storage Options:
+
+Local (SQLite/Room DB) → works offline.
+
+Cloud (Firebase/MongoDB) → sync across devices.
+
+4. Gamification Mechanics
+
+XP Example System:
+
+Meditation 20 min = +20 XP
+
+1 hour coding = +50 XP
+
+Exercise = +30 XP
+
+Reading = +40 XP
+
+Level Formula:
+
+Level Up every 500 XP (customizable).
+
+Achievements:
+
+“7-Day Streak Master”
+
+“1000 XP in Health”
+
+“Early Riser (30 days at 4am)”
+
+5. Tech Stack Suggestion
+
+Frontend (Mobile App):
+
+Android (Java/Kotlin) or React Native/Flutter (cross-platform).
+
+Backend (optional, for sync):
+
+Node.js + Express + MongoDB / Firebase.
+
+UI:
+
+RPG-style interface (progress bars, quest cards, streak icons).
+
+6. First MVP (Minimum Viable Product)
+
+Create quests with XP.
+
+Complete quests → XP increases.
+
+Level system works.
+
+Streaks tracked daily.
+
+Save data locally.
+
+7. Future Expansion
+
+AI Coach: Suggests quests automatically based on habits.
+
+Voice Assistant: “Hey, your next quest is ready!”
+
+Wearable Integration: Sync with smartwatches for exercise quests.
+
+Community Challenges: Join “guilds” and do quests with friends.
+
+📝 Final Prompt (ready-to-use for AI/devs):
+
+“Build a mobile app called Life RPG System. The app should let users turn their daily tasks into RPG quests. Users can create/edit quests with XP values, track progress, level up, maintain streaks, and unlock rewards. Everything must be customizable: tasks, XP, rewards, level thresholds. Store data locally (Room DB) with optional Firebase sync. The UI should look like a game: quests displayed as cards, progress bars for XP/levels, streak counters, and customizable themes. Include notifications for tasks and a daily summary screen. Expandable for future features like AI suggestions, leaderboards, and community quests.”
