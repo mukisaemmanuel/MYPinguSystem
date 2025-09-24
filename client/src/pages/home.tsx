@@ -12,6 +12,7 @@ import BottomNavigation from "@/components/bottom-navigation";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import type { QuestCategory } from "@/lib/types";
+import HabitSuggestion from "@/components/habit-suggestion";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("quests");
@@ -52,6 +53,9 @@ export default function Home() {
     activeStreak: user?.streak || 0
   };
 
+  // Example: infer habits from completed quest categories
+  const habitCategories = Array.from(new Set(completedQuests.map(q => q.category)));
+
   if (userLoading || questsLoading) {
     return (
       <div className="max-w-md mx-auto bg-background min-h-screen flex items-center justify-center">
@@ -87,6 +91,9 @@ export default function Home() {
           <>
             {/* Daily Summary */}
             <DailySummary summary={dailySummary} />
+
+            {/* Quest Suggestions based on user habits */}
+            <HabitSuggestion habits={habitCategories} onSuggestQuest={(quest) => setIsCreateQuestOpen(true)} />
 
             {/* Quest Management */}
             <section>

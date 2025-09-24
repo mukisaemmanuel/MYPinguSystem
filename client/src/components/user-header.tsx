@@ -2,6 +2,7 @@ import type { User } from "@shared/schema";
 import { Progress } from "@/components/ui/progress";
 import { Settings, Flame, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import ThemeSwitcher from "./theme-switcher";
 
 interface UserHeaderProps {
   user: User;
@@ -32,6 +33,8 @@ export default function UserHeader({ user }: UserHeaderProps) {
             <Flame className="w-4 h-4 text-destructive" />
             <span className="text-sm font-semibold" data-testid="text-streak">{user.streak}</span>
           </div>
+          {/* Theme Switcher */}
+          <ThemeSwitcher />
           {/* Settings */}
           <Button 
             variant="ghost" 
